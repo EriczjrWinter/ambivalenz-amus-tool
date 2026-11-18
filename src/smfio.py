@@ -21,7 +21,7 @@ class Track:
         self.ev.append((int(tick), order, raw))
 
     def meta(self, tick, mtype, payload: bytes):
-        self.add(tick, b'\xFF' + bytes([mtype]) + _vlq(len(payload)) + payload, -1)
+        self.add(tick, b'\xFF' + bytes([mtype]) + _vlq(len(payload)) + payload, -3)
 
     def render(self):
         self.ev.sort(key=lambda x: (x[0], x[1]))

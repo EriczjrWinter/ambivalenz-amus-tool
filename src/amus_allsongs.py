@@ -172,14 +172,16 @@ def build_midi(run, path, tpq=MIDI_TPQ):
             last_prog[out_ch] = d1
         tick = int(round((et - base_et) * MIDI_TICKS_PER_ENGINE_TICK))
         tr = tracks.setdefault(out_ch, smfio.Track())
+        # 同一 tick 内的先后：音色号/CC 必须排在音符前面，
+        # 否则开头的音会先用默认音色（program 0 = 钢琴）响掉。
         if kind == 0x90:
             tr.add(tick, bytes([0x90 | out_ch, d1 & 0x7F, d2 & 0x7F]), 1)
         elif kind == 0x80:
             tr.add(tick, bytes([0x80 | out_ch, d1 & 0x7F, 0]), 0)
         elif kind == 0xB0:
-            tr.add(tick, bytes([0xB0 | out_ch, d1 & 0x7F, d2 & 0x7F]), 2)
+            tr.add(tick, bytes([0xB0 | out_ch, d1 & 0x7F, d2 & 0x7F]), -1)
         elif kind == 0xC0:
-            tr.add(tick, bytes([0xC0 | out_ch, d1 & 0x7F]), 2)
+            tr.add(tick, bytes([0xC0 | out_ch, d1 & 0x7F]), -2)
     tl = [t0] + [tracks[k] for k in sorted(tracks)]
     # ch3/4/5 是引擎在初始化时直接设定的固定声部，不走 F5，所以引擎本身不发 program。
     # 这三个声部的音色随曲目变化（在每曲的音色块里），必须从引擎状态读，不能写死。
@@ -189,8 +191,8 @@ def build_midi(run, path, tpq=MIDI_TPQ):
             prog = fixed[i][1] if fixed and i < len(fixed) else 48
             bank = fixed[i][0] if fixed and i < len(fixed) else 0
             if bank:
-                tracks[ch].add(0, bytes([0xB0 | ch, 0, bank & 0x7F]), 2)
-            tracks[ch].add(0, bytes([0xC0 | ch, prog & 0x7F]), 2)
+                tracks[ch].add(0, bytes([0xB0 | ch, 0, bank & 0x7F]), -1)
+            tracks[ch].add(0, bytes([0xC0 | ch, prog & 0x7F]), -2)
     smfio.write_smf(path, tl[1:], tpq, us)
     return True
 
