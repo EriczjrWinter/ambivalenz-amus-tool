@@ -25,8 +25,8 @@ Alice Soft **System3** 引擎 BGM 数据 `AMUS.DAT` 的逆向与 MIDI 导出。
 
 | 对照物 | 结果 |
 |---|---|
-| 第 1 首 vs 官方参考 `AmbivalenZOP.mid` | 7303/7303 音符，音高直方图 0 差异，27/27 program change |
-| 第 21 首 vs PC-98 实机录音 | 6 个通道 program 全对，音高分布 0 差异 |
+| 第 1 首 vs 实机录音 | 7303/7303 音符，音高直方图 0 差异，27/27 program change |
+| 第 21 首 vs 实机录音 | 6 个通道 program 全对，音高分布 0 差异 |
 
 ## 这个格式劝退在哪
 
